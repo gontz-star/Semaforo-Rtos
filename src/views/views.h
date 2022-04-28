@@ -12,5 +12,5 @@ class Adafruit_GFX_Button;
 
 void viewHome(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome); 
 void viewSemaforo(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSemaforo);
-void viewNigga(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsNigga);
+
 #endif 

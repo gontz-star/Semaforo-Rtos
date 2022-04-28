@@ -11,5 +11,6 @@
 
 void taskTouchscreenMenu(void* pvParameters);
 void taskSemaforo(void* pvParameters);
+void taskDisplaySeg(void* pvParameters);
 
 #endif

@@ -1,4 +1,5 @@
 #include "DEBUG_things.h"
+#include "buttons/buttons.h"
 #include "common_defs.h"
 #include "controllers/controllers.h"
 #include "semaforo_task.h"
@@ -7,10 +8,11 @@
 #include "src/TouchScreen.h"
 #include "touchscreen_config.h"
 #include "views/views.h"
-
 Screens CurrentScreen;
+Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+
 void taskTouchscreenMenu(void* pvParameters) {
-  Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+  DEBUG_PRINTLN("STARTING TOUCHSCREEN TASK");
 
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
@@ -57,4 +59,40 @@ void taskTouchscreenMenu(void* pvParameters) {
   tft.fillScreen(BLACK);
   CurrentScreen = Screens::Home;
   viewHome(&tft, buttonsHome);
+
+  for (;;) {
+    taskENTER_CRITICAL();
+    TSPoint p = ts.getPoint();
+
+    // si quiero dibujar la pantalla sin tocar la ts, después de llamar
+    // .getpoint() hay que arreglar la direccion de los pines, ya que los
+    // comparten
+    pinMode(XM, OUTPUT);
+    pinMode(YP, OUTPUT);
+
+    taskEXIT_CRITICAL();
+    if (p.z > MINPRESSURE) {
+      // el modulo tactil tiene 60 puntos no dibujables en la pantalla
+      TSPoint pointTmp = p;
+
+      p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
+      p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
+
+      switch (CurrentScreen) {
+        case Screens::Home: {
+          controllerHome(&tft, buttonsHome, buttonsSemaforo, p);
+          break;
+        }
+        case Screens::Semaforo: {
+          controllerSemaforo(&tft, buttonsSemaforo, buttonsHome, p);
+          break;
+        }
+
+        default: {
+          break;
+        }
+      }
+    }
+    vTaskDelay(pdMS_TO_TICKS(15));
+  }
 }

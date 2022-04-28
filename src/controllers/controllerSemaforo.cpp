@@ -3,7 +3,7 @@
 
 LuzSemaforo semaforoEstado;
 
-uint32_t contadorSemaforo; // ultima actualizacion del semaforo
+
 
 extern Screens CurrentScreen;
 

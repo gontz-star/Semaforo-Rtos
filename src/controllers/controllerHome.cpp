@@ -18,7 +18,7 @@ void controllerHome(Adafruit_TFTLCD *tft, Adafruit_GFX_Button *buttonsHome,
 
   switch (pressedButton) {
     case BUTTON_SCREEN_SEMAFORO: {
-      contadorSemaforo = millis();
+
       semaforoEstado = LuzSemaforo::Rojo;
       CurrentScreen = Screens::Semaforo;
       viewSemaforo(tft, buttonsSemaforo);
