@@ -9,34 +9,38 @@ void taskDisplaySeg(void* pvParameters) {
   extern LuzSemaforo semaforoEstado;
   extern Screens CurrentScreen;
   extern LuzSemaforo semaforoEstado;
+  extern uint8_t redCount;
+  extern uint8_t yellowCount;
+  extern uint8_t greenCount;
 
   TM1637Display display(20, 21);
   display.setBrightness(0x0f);
-  xLastWakeTime = xTaskGetTickCount();
+
   for (;;) {
     switch (CurrentScreen) {
       case Screens::Semaforo: {
+        xLastWakeTime = xTaskGetTickCount();
         switch (semaforoEstado) {
           case LuzSemaforo::Rojo: {
-            static uint8_t red = 15;
-            display.showNumberDec(red--);
-
+            DEBUG_PRINTLN(redCount);
+            display.showNumberDec(redCount--);
+            vTaskDelayUntil(&xLastWakeTime, xFrequency);
             break;
           }
           case LuzSemaforo::Amarillo: {
-            static uint8_t yellow = 10;
-            display.showNumberDec(yellow--);
-
+            DEBUG_PRINTLN(yellowCount);
+            display.showNumberDec(yellowCount--);
+            vTaskDelayUntil(&xLastWakeTime, xFrequency);
             break;
           }
           case LuzSemaforo::Verde: {
-            static uint8_t green = 15;
-            display.showNumberDec(green--);
-
+            DEBUG_PRINTLN(greenCount);
+            display.showNumberDec(greenCount--);
+            vTaskDelayUntil(&xLastWakeTime, xFrequency);
             break;
           }
         }
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
         break;
       }
       case Screens::Home: {
